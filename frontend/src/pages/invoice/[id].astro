@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import InvoiceEditor from '../../components/invoice/InvoiceEditor';
+import { ChevronLeft } from 'lucide-preact';
+
+const { id } = Astro.params;
+---
+
+<BaseLayout title={`Invoice ${id}`}>
+	<div class="mb-10 flex items-center justify-between no-print">
+		<div>
+			<a href="/invoice" class="flex items-center gap-1 text-xs font-bold uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors mb-4">
+				<ChevronLeft className="w-3 h-3" /> Back to List
+			</a>
+			<h1 class="text-3xl font-bold tracking-tight uppercase">Invoice Editor</h1>
+		</div>
+	</div>
+
+	<InvoiceEditor client:only="preact" invoiceId={id} />
+</BaseLayout>

@@ -1,0 +1,57 @@
+---
+import '../styles/global.css';
+import Sidebar from '../components/shared/Sidebar.astro';
+import Navbar from '../components/shared/Navbar.astro';
+
+interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content="InvoiceForge - Minimalist Industrial Invoice App" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title} | InvoiceForge</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+	</head>
+	<body class="bg-stone-50 text-stone-900 min-h-screen flex flex-col">
+		<div class="no-print">
+			<Navbar />
+		</div>
+		<div class="flex flex-1 overflow-hidden">
+			<div class="no-print">
+				<Sidebar />
+			</div>
+			<main class="flex-1 overflow-y-auto p-6 md:p-10">
+				<slot />
+			</main>
+		</div>
+	</body>
+</html>
+
+<style is:global>
+	@reference "../styles/global.css";
+	/* Custom scrollbar for industrial look */
+	::-webkit-scrollbar {
+		width: 8px;
+		height: 8px;
+	}
+	::-webkit-scrollbar-track {
+		@apply bg-stone-100;
+	}
+	::-webkit-scrollbar-thumb {
+		@apply bg-stone-300 rounded-none;
+	}
+	::-webkit-scrollbar-thumb:hover {
+		@apply bg-stone-400;
+	}
+</style>

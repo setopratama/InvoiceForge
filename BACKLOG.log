@@ -1,0 +1,66 @@
+=== INVOICEFORGE - CODE REVIEW BACKLOG ===
+Date: 2026-06-17
+
+======================================================================
+CRITICAL
+======================================================================
+
+1. No authentication at all
+   - API has zero auth, CORS is '*', .env contains real company financial data (NPWP, bank account, etc.)
+   - Any network access to this server means full read/write access to all data.
+
+2. No concurrency protection
+   - JSON file storage uses "read -> modify -> write" with no locking.
+   - Simultaneous requests cause data loss / race conditions.
+
+======================================================================
+HIGH
+======================================================================
+
+3. Hardcoded port in backend/src/index.ts:78
+   - port = 3001 hardcoded instead of reading from .env (where PORT=3001 is defined).
+
+4. Synchronous file write during uploads in pic.route.ts:87
+   - Uses fs.writeFileSync (blocking) instead of fs.promises.writeFile.
+
+5. Firebase analytics imported but never used (frontend/src/lib/firebase.ts)
+   - analytics is never consumed by any component. Unnecessary bundle bloat.
+
+6. Astro node adapter commented out in astro.config.mjs
+   - adapter config is commented out; astro build cannot produce a deployable server.
+
+======================================================================
+MEDIUM
+======================================================================
+
+7. Widespread 'any' types in Preact components
+   - useState<any>(null), any[] for arrays. No interfaces defined for Invoice, Client, PIC, Settings.
+
+8. No pagination on list endpoints
+   - GET /api/clients, /api/pics, /api/invoices return full dataset.
+   - Will degrade as data grows.
+
+9. Missing 'key' props on mapped elements
+   - Several components lack key props (e.g., <option> elements in InvoiceForm.tsx).
+
+10. useEffect missing dependencies in InvoiceEditor.tsx
+    - fetchInitialData not in dependency array; client/pic sync effect incomplete deps.
+
+======================================================================
+LOW
+======================================================================
+
+11. console.log left in production code (pic.service.ts, pic.route.ts)
+    - Debugging statements should be removed or routed through proper logger.
+
+12. No request size limits on file uploads
+    - POST /:id/upload-signature has no size limit check.
+
+13. Dashboard revenue chart is hardcoded placeholder
+    - Values [40, 70, 45, 90, 65, 80] not connected to real data.
+
+14. Hardcoded IDR locale in InvoiceForm.tsx
+    - Uses 'id-ID' locale and 'IDR' prefix instead of formatCurrency utility.
+
+15. .env committed with real company credentials
+    - Sensitive data (bank account, NPWP, etc.) in version control.

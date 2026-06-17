@@ -1,0 +1,18 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SettingsForm from '../components/settings/SettingsForm';
+import { Settings } from 'lucide-preact';
+---
+
+<BaseLayout title="Settings">
+	<div class="mb-10">
+		<h1 class="text-3xl font-bold tracking-tight uppercase flex items-center gap-3">
+			<Settings className="w-8 h-8" /> Pengaturan
+		</h1>
+		<p class="text-stone-500 mt-2 text-sm">Konfigurasi global aplikasi, PPN, dan identitas perusahaan.</p>
+	</div>
+
+	<div class="max-w-4xl">
+		<SettingsForm client:only="preact" />
+	</div>
+</BaseLayout>

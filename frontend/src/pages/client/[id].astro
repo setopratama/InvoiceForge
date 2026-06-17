@@ -1,0 +1,18 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ClientForm from '../../components/client/ClientForm';
+import { ChevronLeft } from 'lucide-preact';
+
+const { id } = Astro.params;
+---
+
+<BaseLayout title={`Edit Client ${id}`}>
+	<div class="mb-10">
+		<a href="/client" class="flex items-center gap-1 text-xs font-bold uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors mb-4">
+			<ChevronLeft className="w-3 h-3" /> Back to List
+		</a>
+		<h1 class="text-3xl font-bold tracking-tight uppercase">Edit Client</h1>
+	</div>
+
+	<ClientForm client:load clientId={id} />
+</BaseLayout>

@@ -1,0 +1,154 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { 
+	Receipt, 
+	Users, 
+	TrendingUp, 
+	Clock 
+} from 'lucide-preact';
+import { api } from '../lib/api';
+import { formatCurrency, formatDate } from '../lib/format';
+
+// In a real app, this would be fetched from the API
+// For now, let's assume we can fetch some stats
+let stats = {
+	totalInvoiced: 0,
+	paidAmount: 0,
+	pendingAmount: 0,
+	activeClients: 0
+};
+
+let recentInvoices: any[] = [];
+
+try {
+	const [invoices, clients] = await Promise.all([
+		api.getInvoices(),
+		api.getClients()
+	]);
+	
+	stats.totalInvoiced = invoices.reduce((acc, inv) => acc + (inv.total || 0), 0);
+	stats.paidAmount = invoices
+		.filter(inv => inv.status === 'paid')
+		.reduce((acc, inv) => acc + (inv.total || 0), 0);
+	stats.pendingAmount = invoices
+		.filter(inv => inv.status === 'sent' || inv.status === 'overdue')
+		.reduce((acc, inv) => acc + (inv.total || 0), 0);
+	stats.activeClients = clients.length;
+
+	// Get latest 5 invoices
+	recentInvoices = invoices
+		.sort((a, b) => new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime())
+		.slice(0, 5)
+		.map(inv => ({
+			...inv,
+			clientName: clients.find(c => c.id === inv.client_id)?.name || 'Unknown Client'
+		}));
+} catch (e) {
+	console.error('Failed to fetch dashboard data', e);
+}
+
+const cards = [
+	{ name: 'Total Invoiced', value: formatCurrency(stats.totalInvoiced), icon: Receipt, color: 'text-stone-900' },
+	{ name: 'Paid Amount', value: formatCurrency(stats.paidAmount), icon: TrendingUp, color: 'text-emerald-600' },
+	{ name: 'Pending Payment', value: formatCurrency(stats.pendingAmount), icon: Clock, color: 'text-blue-600' },
+	{ name: 'Active Clients', value: stats.activeClients.toString(), icon: Users, color: 'text-stone-600' },
+];
+---
+
+<BaseLayout title="Dashboard">
+	<div class="mb-10">
+		<h1 class="text-3xl font-bold tracking-tight uppercase">Dashboard</h1>
+		<p class="text-stone-500 mt-2">Overview of your software house finances.</p>
+	</div>
+
+	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+		{cards.map((card) => (
+			<div class="bg-white border border-stone-200 p-6 shadow-sm">
+				<div class="flex items-center justify-between mb-4">
+					<div class={`p-2 bg-stone-50 border border-stone-100 ${card.color}`}>
+						<card.icon className="w-5 h-5" />
+					</div>
+				</div>
+				<div class="text-stone-500 text-xs font-bold uppercase tracking-widest mb-1">{card.name}</div>
+				<div class="text-2xl font-bold font-mono-industrial tracking-tighter">{card.value}</div>
+			</div>
+		))}
+	</div>
+
+	<div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+		<div class="bg-white border border-stone-200 shadow-sm">
+			<div class="p-6 border-b border-stone-200 flex justify-between items-center">
+				<h2 class="font-bold uppercase tracking-wider text-sm">Recent Invoices</h2>
+				<a href="/invoice" class="text-xs font-bold uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors">View All</a>
+			</div>
+			<div class="p-0 overflow-x-auto">
+				{recentInvoices.length > 0 ? (
+					<table class="w-full text-left border-collapse">
+						<thead>
+							<tr class="bg-stone-50 border-b border-stone-100">
+								<th class="px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-stone-500">Invoice</th>
+								<th class="px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-stone-500">Client</th>
+								<th class="px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-stone-500 text-right">Amount</th>
+								<th class="px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-stone-500 text-center">Status</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-stone-100">
+							{recentInvoices.map((inv) => (
+								<tr class="hover:bg-stone-50 transition-colors">
+									<td class="px-6 py-4">
+										<div class="text-[11px] font-bold text-stone-900">{inv.invoice_number}</div>
+										<div class="text-[9px] text-stone-400 mt-0.5">{formatDate(inv.issue_date)}</div>
+									</td>
+									<td class="px-6 py-4">
+										<div class="text-[11px] font-medium text-stone-600">{inv.clientName}</div>
+									</td>
+									<td class="px-6 py-4 text-right">
+										<div class="text-[11px] font-bold font-mono-industrial">{formatCurrency(inv.total, inv.currency)}</div>
+									</td>
+									<td class="px-6 py-4 text-center">
+										<span class={`text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full ${
+											inv.status === 'paid' ? 'bg-emerald-100 text-emerald-700' :
+											inv.status === 'overdue' ? 'bg-red-100 text-red-700' :
+											inv.status === 'sent' ? 'bg-blue-100 text-blue-700' :
+											'bg-stone-100 text-stone-600'
+										}`}>
+											{inv.status}
+										</span>
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				) : (
+					<div class="text-center py-20 text-stone-400 text-sm">
+						No recent activity to show.
+					</div>
+				)}
+			</div>
+		</div>
+
+		<div class="bg-white border border-stone-200 shadow-sm">
+			<div class="p-6 border-b border-stone-200 flex justify-between items-center">
+				<h2 class="font-bold uppercase tracking-wider text-sm">Revenue Overview</h2>
+				<span class="text-xs font-bold uppercase tracking-widest text-stone-400">Last 6 Months</span>
+			</div>
+			<div class="p-6">
+				<div class="h-64 flex items-end justify-between gap-2">
+					{[40, 70, 45, 90, 65, 80].map((height) => (
+						<div class="flex-1 bg-stone-100 relative group">
+							<div 
+								class="absolute bottom-0 left-0 right-0 bg-stone-900 group-hover:bg-stone-700 transition-all" 
+								style={{ height: `${height}%` }}
+							></div>
+						</div>
+					))}
+				</div>
+				<div class="flex justify-between mt-4">
+					{['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'].map((month) => (
+						<span class="text-[10px] font-bold uppercase tracking-widest text-stone-400 flex-1 text-center">{month}</span>
+					))}
+				</div>
+			</div>
+		</div>
+	</div>
+</BaseLayout>

@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import InvoiceTable from '../../components/invoice/InvoiceTable';
+---
+
+<BaseLayout title="Invoices">
+	<div class="mb-10">
+		<h1 class="text-3xl font-bold tracking-tight uppercase">Invoices</h1>
+		<p class="text-stone-500 mt-2">Create and manage your professional service invoices.</p>
+	</div>
+
+	<InvoiceTable client:load />
+</BaseLayout>

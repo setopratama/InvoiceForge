@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ClientTable from '../../components/client/ClientTable';
+---
+
+<BaseLayout title="Clients">
+	<div class="mb-10">
+		<h1 class="text-3xl font-bold tracking-tight uppercase">Clients</h1>
+		<p class="text-stone-500 mt-2">Manage your client database and their billing information.</p>
+	</div>
+
+	<ClientTable client:load />
+</BaseLayout>

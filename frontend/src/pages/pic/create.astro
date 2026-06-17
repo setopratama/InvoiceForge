@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PICForm from '../../components/pic/PICForm';
+import { ChevronLeft } from 'lucide-preact';
+---
+
+<BaseLayout title="Add PIC">
+	<div class="mb-10">
+		<a href="/pic" class="flex items-center gap-1 text-xs font-bold uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors mb-4">
+			<ChevronLeft className="w-3 h-3" /> Back to List
+		</a>
+		<h1 class="text-3xl font-bold tracking-tight uppercase">New PIC</h1>
+	</div>
+
+	<PICForm client:load />
+</BaseLayout>

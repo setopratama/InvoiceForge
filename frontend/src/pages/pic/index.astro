@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PICTable from '../../components/pic/PICTable';
+---
+
+<BaseLayout title="PIC Management">
+	<div class="mb-10">
+		<h1 class="text-3xl font-bold tracking-tight uppercase">PIC Management</h1>
+		<p class="text-stone-500 mt-2">Manage internal staff responsible for signing and managing invoices.</p>
+	</div>
+
+	<PICTable client:load />
+</BaseLayout>
