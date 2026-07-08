@@ -1,0 +1,22 @@
+services:
+  backend:
+    build: ./backend
+    container_name: invoiceforge-backend
+    ports:
+      - "3002:3001"
+    volumes:
+      - ./backend/data:/app/data
+      - ./backend/uploads:/app/uploads
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: invoiceforge-frontend
+    ports:
+      - "4322:4321"
+    environment:
+      PUBLIC_API_URL: http://localhost:3002/api
+      API_URL_SSR: http://backend:3001/api
+    depends_on:
+      - backend
+    restart: unless-stopped

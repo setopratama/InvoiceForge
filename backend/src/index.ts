@@ -10,6 +10,7 @@ import { BACKEND_DIR } from './utils/storage.js';
 import picRoutes from './routes/pic.js';
 import invoiceRoutes from './routes/invoice.js';
 import settingsRoutes from './routes/settings.js';
+import companyRoutes from './routes/company.js';
 
 const app = new Hono();
 
@@ -34,6 +35,7 @@ app.route('/api/clients', clientRoutes);
 app.route('/api/pics', picRoutes);
 app.route('/api/invoices', invoiceRoutes);
 app.route('/api/settings', settingsRoutes);
+app.route('/api/companies', companyRoutes);
 
 // Frontend Error Logger
 app.post('/api/logs/error', async (c) => {

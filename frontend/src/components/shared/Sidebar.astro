@@ -4,6 +4,7 @@ import {
 	Receipt, 
 	Users, 
 	UserCog, 
+	Building,
 	Settings,
 	PlusCircle
 } from 'lucide-preact';
@@ -13,6 +14,7 @@ const menuItems = [
 	{ name: 'Invoices', icon: Receipt, href: '/invoice' },
 	{ name: 'Clients', icon: Users, href: '/client' },
 	{ name: 'PIC Management', icon: UserCog, href: '/pic' },
+	{ name: 'Companies', icon: Building, href: '/settings/companies' },
 ];
 
 const pathname = new URL(Astro.request.url).pathname;

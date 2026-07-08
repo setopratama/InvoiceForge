@@ -10,9 +10,10 @@ interface Props {
   client?: any;
   pic?: any;
   settings?: any;
+  company?: any;
 }
 
-export default function InvoicePreview({ invoice, client, pic, settings }: Props) {
+export default function InvoicePreview({ invoice, client, pic, settings, company }: Props) {
   const previewRef = useRef<HTMLDivElement>(null);
   const [isExporting, setIsExporting] = useState(false);
 
@@ -82,14 +83,14 @@ export default function InvoicePreview({ invoice, client, pic, settings }: Props
         <div class="flex justify-between items-start mb-16">
           <div>
             <div class="w-12 h-12 bg-[#1c1917] flex items-center justify-center mb-4">
-              <span class="text-[#ffffff] font-bold text-xl">{settings?.company_name?.substring(0, 2).toUpperCase() || 'CO'}</span>
+              <span class="text-[#ffffff] font-bold text-xl">{(company?.name || settings?.company_name || 'CO').substring(0, 2).toUpperCase()}</span>
             </div>
-            <div style="font-size: 18px; font-weight: 700; text-transform: uppercase; color: #1c1917;">{settings?.company_name || 'Company Name'}</div>
+            <div style="font-size: 18px; font-weight: 700; text-transform: uppercase; color: #1c1917;">{company?.name || settings?.company_name || 'Company Name'}</div>
             <p class="text-[10px] text-[#78716c] mt-1 max-w-[200px] leading-relaxed">
-              {settings?.company_address || 'Company Address'}
+              {company?.address || settings?.company_address || 'Company Address'}
             </p>
-            <p class="text-[10px] text-[#78716c] mt-1 italic">{settings?.company_email}</p>
-            {settings?.company_phone && <p class="text-[10px] text-[#78716c]">{settings.company_phone}</p>}
+            <p class="text-[10px] text-[#78716c] mt-1 italic">{company?.email || settings?.company_email}</p>
+            {(company?.phone || settings?.company_phone) && <p class="text-[10px] text-[#78716c]">{company?.phone || settings?.company_phone}</p>}
           </div>
           <div class="text-right">
             <div style="font-size: 30px; font-weight: 800; text-transform: uppercase; color: #1c1917; margin-bottom: 8px; line-height: 1;">Invoice</div>
@@ -196,9 +197,9 @@ export default function InvoicePreview({ invoice, client, pic, settings }: Props
         <div class="mt-20 grid grid-cols-2 gap-12">
           <div>
             <div class="text-[9px] font-bold uppercase tracking-widest text-[#a8a29e] mb-2">Payment Info</div>
-            <div class="text-xs font-bold">{invoice.bank_info.bank_name}</div>
-            <div class="text-sm font-bold font-mono-industrial mt-1 tracking-wider">{invoice.bank_info.account_number}</div>
-            <div class="text-[10px] text-[#78716c] mt-1 uppercase tracking-wider">{invoice.bank_info.account_name}</div>
+            <div class="text-xs font-bold">{invoice.bank_info?.bank_name || (company?.bank_info?.bank_name || settings?.bank_info?.bank_name)}</div>
+            <div class="text-sm font-bold font-mono-industrial mt-1 tracking-wider">{invoice.bank_info?.account_number || (company?.bank_info?.account_number || settings?.bank_info?.account_number)}</div>
+            <div class="text-[10px] text-[#78716c] mt-1 uppercase tracking-wider">{invoice.bank_info?.account_name || (company?.bank_info?.account_name || settings?.bank_info?.account_name)}</div>
             
             <div class="mt-6 text-[10px] text-[#a8a29e] leading-relaxed italic">
               {invoice.notes}

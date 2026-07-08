@@ -1,4 +1,11 @@
-const BASE_URL = import.meta.env.PUBLIC_API_URL ? import.meta.env.PUBLIC_API_URL.replace('/api', '') : 'http://localhost:3001';
+const publicApiUrl = import.meta.env.PUBLIC_API_URL;
+const ssrApiUrl = import.meta.env.API_URL_SSR;
+const isSSR = import.meta.env.SSR;
+
+const BASE_URL = isSSR
+  ? (ssrApiUrl || 'http://localhost:3001').replace('/api', '')
+  : (publicApiUrl || 'http://localhost:3001').replace('/api', '');
+
 const API_BASE_URL = `${BASE_URL}/api`;
 
 async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
@@ -54,6 +61,13 @@ export const api = {
   // Settings
   getSettings: () => request<any>('/settings'),
   updateSettings: (data: any) => request<any>('/settings', { method: 'PUT', body: JSON.stringify(data) }),
+
+  // Companies
+  getCompanies: () => request<any[]>('/companies'),
+  getCompany: (id: string) => request<any>(`/companies/${id}`),
+  createCompany: (data: any) => request<any>('/companies', { method: 'POST', body: JSON.stringify(data) }),
+  updateCompany: (id: string, data: any) => request<any>(`/companies/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteCompany: (id: string) => request<any>(`/companies/${id}`, { method: 'DELETE' }),
 
   // Logs
   logError: (data: { message: string; details?: string }) => request<any>('/logs/error', { method: 'POST', body: JSON.stringify(data) }).catch(() => {}), // Ignore if logging itself fails

@@ -16,6 +16,7 @@ export default function InvoiceEditor({ invoiceId }: Props) {
   const [clients, setClients] = useState<any[]>([]);
   const [pics, setPics] = useState<any[]>([]);
   const [settings, setSettings] = useState<any>(null);
+  const [companies, setCompanies] = useState<any[]>([]);
 
   // Auto-save states
   const [currentId, setCurrentId] = useState<string | undefined>(invoiceId);
@@ -29,25 +30,29 @@ export default function InvoiceEditor({ invoiceId }: Props) {
 
   const fetchInitialData = async () => {
     try {
-      const [cData, pData, sData] = await Promise.all([
+      const [cData, pData, sData, compData] = await Promise.all([
         api.getClients(),
         api.getPICs(),
-        api.getSettings()
+        api.getSettings(),
+        api.getCompanies()
       ]);
       setClients(cData);
       setPics(pData);
       setSettings(sData);
+      setCompanies(compData);
 
       if (invoiceId) {
         const data = await api.getInvoice(invoiceId);
         setInvoice(data);
         setCurrentId(invoiceId);
       } else {
+        const defaultCompany = compData.length > 0 ? compData[0] : null;
         const initialInvoice = {
           items: [{ description: '', detail: '', quantity: 1, unit: 'paket', unit_price: 0 }],
           discount: { type: 'percentage', value: 0 },
           tax: { ppn: sData.enable_tax ? sData.ppn : 0 },
-          bank_info: sData.bank_info,
+          bank_info: defaultCompany?.bank_info || sData.bank_info,
+          company_id: defaultCompany?.id || '',
           currency: sData.currency,
           client_id: cData.length > 0 ? cData[0].id : '',
           pic_id: pData.length > 0 ? pData[0].id : '',
@@ -127,6 +132,11 @@ export default function InvoiceEditor({ invoiceId }: Props) {
 
   if (!invoice) return <div class="p-10 text-center text-stone-400 italic">Loading editor...</div>;
 
+  // Compute selected company
+  const selectedCompany = invoice?.company_id
+    ? companies.find(c => c.id === invoice.company_id)
+    : null;
+
   // Sync preview data
   useEffect(() => {
     if (invoice?.client_id) {
@@ -147,6 +157,7 @@ export default function InvoiceEditor({ invoiceId }: Props) {
           onSubmit={handleSubmit}
           clients={clients}
           pics={pics}
+          companies={companies}
           isSaving={isSaving}
           lastSaved={lastSaved}
         />
@@ -155,7 +166,7 @@ export default function InvoiceEditor({ invoiceId }: Props) {
       {/* Divider */}
       <div class="border-t border-stone-200 pt-10 flex flex-col items-center print:border-none print:pt-0 print:block">
         <div class="max-w-4xl w-full print:max-w-none print:w-full">
-          <InvoicePreview invoice={invoice} client={client} pic={pic} settings={settings} />
+          <InvoicePreview invoice={invoice} client={client} pic={pic} settings={settings} company={selectedCompany} />
         </div>
       </div>
     </div>

@@ -16,6 +16,7 @@ export const InvoiceSchema = z.object({
   status: z.enum(['draft', 'sent', 'paid', 'overdue', 'cancelled']).default('draft'),
   client_id: z.string().min(1, 'Client is required'),
   pic_id: z.string().min(1, 'PIC is required'),
+  company_id: z.string().optional(),
   issue_date: z.string(),
   due_date: z.string(),
   payment_terms: z.number().default(30),

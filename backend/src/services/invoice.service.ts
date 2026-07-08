@@ -1,6 +1,7 @@
 import { readJson, writeJson } from '../utils/storage.js';
 import { generateId, generateInvoiceNumber } from '../utils/id.js';
 import type { Invoice, InvoiceItem } from '../schemas/invoice.schema.js';
+import type { Company } from '../schemas/company.schema.js';
 
 const FILENAME = 'invoices.json';
 
@@ -48,6 +49,13 @@ export const InvoiceService = {
     const invoices = await this.getAll();
     const id = await generateId('INV', FILENAME);
     const invoice_number = await generateInvoiceNumber();
+
+    if (!data.company_id) {
+      const companies = await readJson<Company[]>('companies.json');
+      if (!data.company_id && companies.length > 0) {
+        data.company_id = companies[0]!.id;
+      }
+    }
     
     const calculated = calculateInvoice(data);
     const newInvoice = {

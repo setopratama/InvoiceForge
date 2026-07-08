@@ -21,12 +21,15 @@ interface Props {
   onSubmit: (status: string) => void;
   clients: any[];
   pics: any[];
+  companies?: any[];
   loading?: boolean;
   isSaving?: boolean;
   lastSaved?: Date | null;
 }
 
-export default function InvoiceForm({ data, onChange, onSubmit, clients, pics, loading, isSaving, lastSaved }: Props) {
+const defaultCompany = { id: '', name: 'Pilih Perusahaan', bank_info: { bank_name: '', account_number: '', account_name: '' } };
+
+export default function InvoiceForm({ data, onChange, onSubmit, clients, pics, companies = [], loading, isSaving, lastSaved }: Props) {
 
   const handleAddItem = () => {
     onChange({
@@ -96,6 +99,27 @@ export default function InvoiceForm({ data, onChange, onSubmit, clients, pics, l
                 onChange={(e: any) => onChange({ ...data, pic_id: e.target.value })}
               >
                 {pics.map(p => <option value={p.id}>{p.name} - {p.role}</option>)}
+              </select>
+            </div>
+
+            <div class="space-y-2">
+              <label class="text-[10px] font-bold uppercase tracking-widest text-stone-500 flex items-center gap-1.5">
+                <Building className="w-3 h-3" /> Perusahaan
+              </label>
+              <select 
+                class="w-full border-b border-stone-200 py-2 text-sm focus:outline-none focus:border-stone-900 bg-transparent transition-colors"
+                value={data.company_id || ''}
+                onChange={(e: any) => {
+                  const company = companies.find(c => c.id === e.target.value);
+                  onChange({
+                    ...data,
+                    company_id: e.target.value,
+                    bank_info: company?.bank_info || { bank_name: '', account_number: '', account_name: '' },
+                  });
+                }}
+              >
+                <option value="">Pilih Perusahaan</option>
+                {companies.map(c => <option value={c.id}>{c.name}</option>)}
               </select>
             </div>
 
@@ -218,27 +242,27 @@ export default function InvoiceForm({ data, onChange, onSubmit, clients, pics, l
                 <label class="text-[9px] font-bold uppercase tracking-widest text-stone-400">Nama Bank</label>
                 <input 
                   type="text"
-                  class="w-full text-sm border-b border-stone-100 py-1 focus:outline-none"
+                  class="w-full text-sm border-b border-stone-100 py-1 focus:outline-none bg-stone-50 text-stone-500"
                   value={data.bank_info?.bank_name || ''}
-                  onInput={(e: any) => onChange({ ...data, bank_info: { ...data.bank_info, bank_name: e.target.value } })}
+                  readOnly
                 />
               </div>
               <div class="space-y-2">
                 <label class="text-[9px] font-bold uppercase tracking-widest text-stone-400">Nomor Rekening</label>
                 <input 
                   type="text"
-                  class="w-full text-sm border-b border-stone-100 py-1 focus:outline-none font-mono-industrial"
+                  class="w-full text-sm border-b border-stone-100 py-1 focus:outline-none font-mono-industrial bg-stone-50 text-stone-500"
                   value={data.bank_info?.account_number || ''}
-                  onInput={(e: any) => onChange({ ...data, bank_info: { ...data.bank_info, account_number: e.target.value } })}
+                  readOnly
                 />
               </div>
               <div class="space-y-2">
                 <label class="text-[9px] font-bold uppercase tracking-widest text-stone-400">Nama Pemilik Rekening</label>
                 <input 
                   type="text"
-                  class="w-full text-sm border-b border-stone-100 py-1 focus:outline-none"
+                  class="w-full text-sm border-b border-stone-100 py-1 focus:outline-none bg-stone-50 text-stone-500"
                   value={data.bank_info?.account_name || ''}
-                  onInput={(e: any) => onChange({ ...data, bank_info: { ...data.bank_info, account_name: e.target.value } })}
+                  readOnly
                 />
               </div>
             </div>

@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CompanyTable from '../../components/settings/CompanyTable';
+import { Building } from 'lucide-preact';
+---
+
+<BaseLayout title="Companies">
+	<div class="mb-10">
+		<div class="flex items-center justify-between">
+			<div>
+				<a href="/settings" class="flex items-center gap-1 text-xs font-bold uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors mb-4">
+					← Back to Settings
+				</a>
+				<h1 class="text-3xl font-bold tracking-tight uppercase flex items-center gap-3">
+					<Building className="w-8 h-8" /> Perusahaan
+				</h1>
+				<p class="text-stone-500 mt-2 text-sm">Kelola data perusahaan untuk ditampilkan di invoice.</p>
+			</div>
+		</div>
+	</div>
+
+	<CompanyTable client:only="preact" />
+</BaseLayout>

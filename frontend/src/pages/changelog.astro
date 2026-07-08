@@ -1,0 +1,68 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { FileText } from 'lucide-preact';
+
+const sections = [
+  {
+    version: 'v1.0.0',
+    date: '2026-07-06',
+    added: [
+      { label: 'Dashboard', desc: 'overview finansial: total invoiced, paid, pending, active clients' },
+      { label: 'Invoice Management', desc: 'create, edit, clone, delete, status (draft/sent/paid/overdue/cancelled)' },
+      { label: 'PDF Export', desc: 'export invoice ke PDF via html2pdf.js' },
+      { label: 'Client Master Data', desc: 'CRUD clients, filter by type (corporate/individual)' },
+      { label: 'PIC Internal Master Data', desc: 'CRUD PIC, upload signature' },
+      { label: 'Multi-Company', desc: 'kelola banyak perusahaan dengan bank info, pilih perusahaan di invoice' },
+      { label: 'Settings', desc: 'konfigurasi PPN, mata uang, identitas perusahaan default' },
+      { label: 'Invoice Filter', desc: 'filter by status, client, search by invoice number' },
+      { label: 'Auto-Save Draft', desc: 'draft invoice tersimpan otomatis' },
+      { label: 'Clone Invoice', desc: 'duplikasi invoice yang sudah ada' },
+      { label: 'Error Logging', desc: 'frontend error logger ke backend' },
+    ],
+    tech: [
+      'Backend: Hono.js + Zod + TypeScript (ESM)',
+      'Frontend: Astro (SSR) + Preact + Tailwind CSS v4',
+      'Storage: JSON flat-file (no database required)',
+      'PDF: html2pdf.js',
+      'Icons: Lucide Preact',
+    ],
+  },
+];
+---
+
+<BaseLayout title="Changelog">
+	<div class="mb-10">
+		<h1 class="text-3xl font-bold tracking-tight uppercase flex items-center gap-3">
+			<FileText className="w-8 h-8" /> Changelog
+		</h1>
+		<p class="text-stone-500 mt-2 text-sm">Riwayat versi InvoiceForge.</p>
+	</div>
+
+	<div class="space-y-10 max-w-3xl">
+		{sections.map((s) => (
+			<div class="bg-white border border-stone-200 shadow-sm p-8">
+				<div class="flex items-baseline justify-between mb-6 pb-4 border-b border-stone-200">
+					<h2 class="text-2xl font-bold tracking-tight">{s.version}</h2>
+					<span class="text-xs font-bold uppercase tracking-widest text-stone-400">{s.date}</span>
+				</div>
+
+				<h3 class="text-[10px] font-bold uppercase tracking-widest text-stone-500 mb-4">Added</h3>
+				<div class="space-y-3 mb-8">
+					{s.added.map((item) => (
+						<div class="flex gap-4 text-sm">
+							<span class="font-bold text-stone-900 whitespace-nowrap min-w-[170px]">{item.label}</span>
+							<span class="text-stone-600">{item.desc}</span>
+						</div>
+					))}
+				</div>
+
+				<h3 class="text-[10px] font-bold uppercase tracking-widest text-stone-500 mb-4">Tech Stack</h3>
+				<ul class="space-y-1.5">
+					{s.tech.map((t) => (
+						<li class="text-sm text-stone-600 pl-4">— {t}</li>
+					))}
+				</ul>
+			</div>
+		))}
+	</div>
+</BaseLayout>
