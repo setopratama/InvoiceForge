@@ -5,8 +5,12 @@ Monorepo: `backend/` (Hono API) + `frontend/` (Astro + Preact + Tailwind). No te
 ## Commands
 
 ```bash
-# Start both (from root)
+# Start both (from root, local development)
 npm run dev
+
+# Start via Docker Compose (recommended for testing container setup)
+docker compose up --build -d     # ports: host 4322 (frontend) & 3002 (backend)
+docker compose down              # stop containers
 
 # Backend only
 cd backend && npm run dev        # port 3001, uses tsx + node --watch
@@ -23,17 +27,17 @@ There is no `typecheck`, `lint`, `test`, or `format` script anywhere. No CI, no 
 ## Architecture
 
 **Backend** — `backend/src/`
-- `index.ts`: Hono app entry. CORS `*`, logger, routes mounted at `/api/{clients,pics,invoices,settings}`. Port 3001 hardcoded.
-- `routes/`: One file per resource (client, invoice, pic, settings).
+- `index.ts`: Hono app entry. CORS `*`, logger, routes mounted at `/api/{clients,pics,invoices,settings,companies}`. Port 3001 hardcoded.
+- `routes/`: One file per resource (client, invoice, pic, settings, company).
 - `schemas/`: Zod schemas for validation.
 - `services/`: Business logic, JSON file reads/writes via `utils/storage.ts`.
 - `utils/storage.ts`: `readJson`/`writeJson` helpers. Data lives in `backend/data/*.json` (gitignored). Auto-creates dirs. No locking.
-- `utils/id.ts`: Sequential ID generation (`CLI-001`, `INV/2026/06/001`).
+- `utils/id.ts`: Sequential ID generation (`CLI-001`, `INV/2026/06/001`, `COMP-001`).
 
 **Frontend** — `frontend/src/`
-- `pages/`: Astro file-based routing. `index.astro` is dashboard. `invoice/`, `client/`, `pic/` subdirs. `settings.astro`.
+- `pages/`: Astro file-based routing. `index.astro` is dashboard. `invoice/`, `client/`, `pic/`, `settings/` subdirs. `changelog.astro`.
 - `components/`: Preact `.tsx` components (interactive islands).
-- `lib/api.ts`: Fetch wrapper hitting `http://localhost:3001/api`. Reads `PUBLIC_API_URL` env to override base URL.
+- `lib/api.ts`: Fetch wrapper. Detects SSR: uses `API_URL_SSR` (default `http://localhost:3001`) on server, `PUBLIC_API_URL` (default `http://localhost:3001`) in browser.
 - `lib/firebase.ts`: Firebase init present but **analytics is unused** — dead code.
 - `lib/calculate.ts`, `lib/format.ts`: Invoice math and currency formatting.
 - `layouts/`: Astro layout shells.
@@ -54,6 +58,8 @@ There is no `typecheck`, `lint`, `test`, or `format` script anywhere. No CI, no 
 - **Signature uploads**: `backend/uploads/` dir, served via `@hono/node-server/serve-static`. Uses `writeFileSync` (blocking).
 - **No pagination** on list endpoints. All records returned at once.
 - **Backend `.env`**: company identity settings (name, address, NPWP, bank). Not used for secrets beyond that.
+- **Docker Port Mapping**: Host ports are mapped to `3002` (backend) and `4322` (frontend) to prevent conflicts, while internal container ports remain `3001` (backend) and `4321` (frontend).
+- **API URL SSR**: Frontend SSR calls (like dashboard) fetch via `http://backend:3001/api` inside the Docker network. Client-side fetches (like forms) use `http://localhost:3002/api`.
 
 ## Files to read before editing
 

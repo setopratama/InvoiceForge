@@ -8,8 +8,10 @@ InvoiceForge adalah aplikasi manajemen invoice minimalis industrial yang diranca
 - **Invoice Editor & Preview**: Edit invoice dan lihat preview-nya secara instan sebelum diekspor.
 - **Export PDF**: Unduh invoice dalam format PDF profesional langsung dari browser.
 - **Master Data**: Kelola database Client dan PIC (Penanggung Jawab) internal dengan mudah.
+- **Multi-Company**: Kelola banyak perusahaan beserta data bank masing-masing dan pilih perusahaan saat buat invoice.
 - **Sistem Clone**: Duplikasi invoice yang sudah ada untuk mempercepat proses pembuatan.
 - **Industrial Design**: Antarmuka bersih dengan palet warna *stone* dan tipografi teknis yang premium.
+- **Version & Changelog Page**: Navigasi versi interaktif langsung dari aplikasi.
 
 ## 🛠️ Stack Teknologi
 
@@ -50,6 +52,19 @@ npm install
 npm run dev
 ```
 Ini akan menjalankan kedua server secara paralel menggunakan `concurrently`.
+
+### 5. Menyalankan via Docker Compose
+Alternatifnya, Anda dapat menjalankan aplikasi dalam container Docker secara instan tanpa perlu menginstal dependensi Node.js secara lokal:
+```bash
+# Build dan jalankan container
+docker compose up --build -d
+
+# Stop container
+docker compose down
+```
+Setelah container berjalan, aplikasi dapat diakses di:
+- **Frontend Web**: `http://localhost:4322`
+- **Backend API**: `http://localhost:3002`
 
 ---
 
